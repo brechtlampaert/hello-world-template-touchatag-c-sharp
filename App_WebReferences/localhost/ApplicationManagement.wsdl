@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<definitions xmlns:tns="http://www.touchatag.com" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="ApplicationManagement" targetNamespace="http://www.touchatag.com" xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <types>
+    <xs:schema targetNamespace="http://www.touchatag.com" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="blueprint" type="tns:blueprint" />
+      <xs:element name="getApplicationConfig" nillable="true" type="tns:tikitTransactionId" />
+      <xs:element name="getApplicationConfigResponse" nillable="true" type="xs:base64Binary" />
+      <xs:element name="handleRequest" type="tns:HandleRequest" />
+      <xs:element name="specification" type="tns:Specification" />
+      <xs:element name="updateTransaction" nillable="true" type="tns:HandleRequest" />
+      <xs:simpleType name="tikitTransactionId">
+        <xs:restriction base="xs:string" />
+      </xs:simpleType>
+      <xs:complexType name="HandleRequest">
+        <xs:sequence>
+          <xs:element name="tikitTransactionId" type="tns:tikitTransactionId" />
+          <xs:element name="specification" type="tns:Specification" />
+          <xs:element minOccurs="0" name="applicationConfig" type="xs:base64Binary" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="Specification">
+        <xs:sequence>
+          <xs:element name="application" type="tns:application" />
+          <xs:element name="blueprint" type="tns:blueprint" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="application">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="command" type="tns:command" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="command">
+        <xs:sequence />
+        <xs:attribute name="id" type="xs:string" />
+      </xs:complexType>
+      <xs:complexType name="blueprint">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="superblock" type="tns:superblock" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="superblock">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:block">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="interface" type="tns:interface" />
+              <xs:element minOccurs="0" name="breakdown" type="tns:breakdown" />
+              <xs:element minOccurs="0" name="wiringscheme" type="tns:wiringscheme" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="block">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="parameter" type="tns:parameter" />
+        </xs:sequence>
+        <xs:attribute name="ref" type="xs:string" />
+        <xs:attribute name="id" type="xs:string" use="required" />
+      </xs:complexType>
+      <xs:complexType name="interface">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="pin" type="tns:pin" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="pin">
+        <xs:sequence />
+        <xs:attribute name="name" type="xs:string" />
+        <xs:attribute name="index" type="xs:int" use="required" />
+        <xs:attribute name="type" type="tns:pinType" />
+        <xs:attribute name="direction" type="tns:direction" />
+      </xs:complexType>
+      <xs:complexType name="breakdown">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="block" type="tns:block" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="parameter">
+        <xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:element name="string" type="xs:string" />
+            <xs:element name="integer" type="xs:int" />
+            <xs:element name="short" type="xs:short" />
+            <xs:element name="float" type="xs:float" />
+            <xs:element name="double" type="xs:double" />
+            <xs:element name="boolean" type="xs:boolean" />
+            <xs:element name="URI" type="xs:string" />
+            <xs:element name="ReaderId" type="tns:readerId" />
+            <xs:element name="list" type="tns:xmlList" />
+            <xs:element name="map" type="tns:xmlMap" />
+          </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required" />
+      </xs:complexType>
+      <xs:complexType name="readerId" final="extension restriction">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="uid" type="xs:base64Binary" />
+          <xs:element minOccurs="0" name="serialNr" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="xmlList">
+        <xs:sequence>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="string" type="xs:string" />
+            <xs:element name="integer" type="xs:int" />
+            <xs:element name="short" type="xs:short" />
+            <xs:element name="float" type="xs:float" />
+            <xs:element name="double" type="xs:double" />
+            <xs:element name="boolean" type="xs:boolean" />
+            <xs:element name="URI" type="xs:string" />
+            <xs:element name="ReaderId" type="tns:readerId" />
+            <xs:element name="list" type="tns:xmlList" />
+            <xs:element name="map" type="tns:xmlMap" />
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="xmlMap">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="entry" type="tns:xmlMapEntry"  />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="xmlMapEntry">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="key" type="tns:xmlTypedValue" />
+          <xs:element minOccurs="0" name="value" type="tns:xmlTypedValue" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="xmlTypedValue">
+        <xs:sequence>
+          <xs:choice minOccurs="0">
+            <xs:element name="string" type="xs:string" />
+            <xs:element name="integer" type="xs:int" />
+            <xs:element name="short" type="xs:short" />
+            <xs:element name="float" type="xs:float" />
+            <xs:element name="double" type="xs:double" />
+            <xs:element name="boolean" type="xs:boolean" />
+            <xs:element name="URI" type="xs:string" />
+            <xs:element name="list" type="tns:xmlList" />
+            <xs:element name="map" type="tns:xmlMap" />
+            <xs:element name="ReaderId" type="tns:readerId" />
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="wiringscheme">
+        <xs:sequence>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="wire" type="tns:wire" />
+            <xs:element name="shunt" type="tns:shunt" />
+            <xs:element name="cable" type="tns:cable" />
+          </xs:choice>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="wire">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:wiring">
+            <xs:sequence />
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="wiring" abstract="true">
+        <xs:sequence />
+        <xs:attribute name="to" type="xs:string" />
+        <xs:attribute name="from" type="xs:string" />
+      </xs:complexType>
+      <xs:complexType name="shunt">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:wiring">
+            <xs:sequence />
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="cable">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:wiring">
+            <xs:sequence />
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:simpleType name="pinType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="boolean" />
+          <xs:enumeration value="integer" />
+          <xs:enumeration value="decimal" />
+          <xs:enumeration value="text" />
+          <xs:enumeration value="uri" />
+          <xs:enumeration value="tag-event" />
+          <xs:enumeration value="tikit-context" />
+          <xs:enumeration value="touchatag-action" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="direction">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="IN" />
+          <xs:enumeration value="OUT" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+  </types>
+  <message name="Touchatag_updateTransactionResponse" />
+  <message name="Touchatag_getApplicationConfig">
+    <part name="getApplicationConfig" element="tns:getApplicationConfig" />
+  </message>
+  <message name="Touchatag_getApplicationConfigResponse">
+    <part name="getApplicationConfigResponse" element="tns:getApplicationConfigResponse" />
+  </message>
+  <message name="Touchatag_updateTransaction">
+    <part name="updateTransaction" element="tns:updateTransaction" />
+  </message>
+  <portType name="Touchatag">
+    <operation name="getApplicationConfig" parameterOrder="getApplicationConfig">
+      <input message="tns:Touchatag_getApplicationConfig" />
+      <output message="tns:Touchatag_getApplicationConfigResponse" />
+    </operation>
+    <operation name="updateTransaction" parameterOrder="updateTransaction">
+      <input message="tns:Touchatag_updateTransaction" />
+      <output message="tns:Touchatag_updateTransactionResponse" />
+    </operation>
+  </portType>
+  <binding name="TouchatagBinding" type="tns:Touchatag">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="getApplicationConfig">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+    <operation name="updateTransaction">
+      <soap:operation soapAction="" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+  <service name="ApplicationManagement">
+    <port name="TouchatagPort" binding="tns:TouchatagBinding">
+      <soap:address location="http://127.0.0.1:8080/soap/applicationManagement" />
+    </port>
+  </service>
+</definitions>
