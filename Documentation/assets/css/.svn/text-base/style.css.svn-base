@@ -1,0 +1,238 @@
+div#hd {
+	background:transparent url(../gfx/touchatag_dev.jpg) no-repeat scroll right center;
+	padding: 10px 0;
+}
+
+div#hd h1 {
+	font-size:	182%;
+	padding: 60px 0 10px 10px;
+	margin: 0;
+}
+
+div#ft {
+	margin: 20px 0;
+	padding: 5px 0;
+	border: solid #09F;
+	border-width: 1px 0 0 0;
+}
+
+h2 {
+	color: #09F;
+}
+
+a {
+color:	#333;
+}
+
+a:visited  {
+color: 	#666;
+}
+
+a:hover  {
+color: 	black;
+}
+
+
+
+p span.number {
+	color: #09F;
+	font-size:182%;
+	font-weight: bold;
+	margin: 0 5px 0 0;
+}
+
+code.command, pre.file, div.screen {
+	padding: 5px 10px;
+	margin: 10px 0;
+	display: block;
+}
+
+div.screen {
+	border: 1px solid #666;
+}
+
+code.command {
+	background-color: #EEE;
+}
+
+pre.file {
+	border: 1px dashed #CCC;
+	background-color: #FFF;
+}
+
+ul.menu{
+	margin:0;
+	padding:0;
+	border: 1px solid #09F;
+	border-width: 0 0 1px 0;
+	width: 100%;
+}
+
+ul.menu li {
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+	float:left;
+	margin:0;
+	padding:0;
+}
+
+ul.menu li a {
+	color: #09F;
+	display:block;
+	padding: 5px 12px;
+	font-size: 123.1%;
+	font-variant: small-caps;
+	text-decoration: none;
+	border: 1px solid transparent;
+	border-width: 0 0 2px 0;
+}
+
+ul.menu li a:hover{
+	border-color: #09F;
+
+}
+
+/* 
+	The Legendary Clearfix
+	@see http://www.positioniseverything.net/easyclearing.html
+*/
+
+.clearfix:after, .cols:after, .icon:after, .shareList li:after, .portfolioExamples:after {
+	content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+}
+
+
+.warning {
+	background-color: #F33;
+	color: white;
+	list-style-position:inside;
+	padding: 5px 20px;
+	margin: 20px 0;
+	font-weight: bold;
+}
+
+ul.warning li {
+	padding: 5px 0;
+}
+
+div.comment {
+	margin-top: 20px;
+}
+
+/* Blocks */
+
+div.block {
+	background-color: blue;
+	display: inline;
+	float: left;
+	margin: 5px 0;
+	padding: 5px;
+}
+
+div.block h5 {
+	color: white;
+	margin: 5px;
+	text-align: center;
+	font-size: 123.1%;
+}
+
+div.block h6 {
+	color: white;
+	margin: 5px;
+	text-align: center;
+	font-size: 116%;
+	font-family: monospace;
+}
+
+div.block ul {
+	display: inline;
+	float: left;
+	margin: 10px 0;
+	padding:0;
+}
+
+div.block ul.outpins {
+	float: right;
+	margin-left: 10px;
+}
+
+div.block ul li{
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
+	margin: 5px 0;
+	padding: 0 10px;
+	float: none;
+}
+
+div.block ul li a, div.block ul li span  {
+	background-color: #ccc;
+	display: inline-block;
+	text-decoration: none;
+	color: black;
+	padding: 2px 5px;
+}
+
+div.block ul li a:hover {
+	color: blue;
+}
+
+div.block ul.inpins li {
+	background: transparent url(../gfx/in.png) no-repeat scroll left center;
+	height: 20px;
+}
+
+div.block ul.inpins li  a {
+	padding-right: 10px;
+}
+
+div.block ul.outpins li {
+	background: transparent url(../gfx/out.png) no-repeat scroll right center;
+	height: 20px;
+	text-align: right;
+}
+
+div.block ul.outpins li a {
+	padding-left: 10px;
+}
+
+div.block div.props {
+	float: left;
+	width: 100%;
+	clear: both;
+}
+
+div.block div.props dl {
+	width: 100%;
+	overflow: auto;
+	margin: 5px 0;
+	padding: 0;
+	background-color: #eee;
+	font-family: monospace;
+} 
+
+div.block div.props dt, div.block div.props dd {
+	padding: 2px 5px;
+}
+
+div.block div.props dt {
+	float: left;
+	padding-right: 15px;
+	color: #333;
+}
+
+div.block div.props dd {
+	float: right;
+	padding-left: 15px;
+	color: #33F
+}
+
+div.block div.props dd a {
+    color: #33F
+}
+

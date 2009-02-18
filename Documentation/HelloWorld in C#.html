@@ -1,0 +1,318 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="assets/css/reset-fonts-grids.css" />
+<link rel="stylesheet" type="text/css" href="assets/css/base-min.css" /> 
+<link rel="stylesheet" type="text/css" href="assets/css/style.css" />
+
+<title>Touchatag developer documentation : </title>
+</head>
+<body>
+<div id="doc">
+	<div id="hd">
+		<h1>Touchatag developer documentation</h1>
+
+		<div id="nav">
+			<ul class="menu clearfix">
+				<li><a href="index.html">home</a></li>
+				<li><a href="integration.html">integration</a></li>
+				<li><a href="blockdoc/index.html">blockdoc</a></li>
+				<li><a href="http://www.touchatag.com">www.touchatag.com</a></li>
+			</ul>
+		</div>
+	</div>
+	<div id="bd">		
+	
+<h1>Creating a Hello World Template webapp (C#)</h1>
+
+<p>In this example we will create a simple HelloWold webapp (in C#) that is an external Template for the touchatag service.</p>
+
+<h2>Creating our simple web application</h2>
+
+<p>First of all we need to choose an application that will be triggered by our touchatag action. To start off with an easy example we will use the Web Link action. To make it a little more interesting we will create a ASP.NET page that takes our name as an argument and then welcomes us, saying hello. The user does not need to know how to format or append queryparameters to an url. That is something our External Template will help him with.</p>
+
+<p>We are going to use Microsoft Visual Studio to create a new website. 
+    <br />
+    Open Visual Studio and choose &quot;Create a new Web Site&quot; in C#<br />Add a New Web Form to 
+    your website and call it HelloWorld.aspx (Add New Item ==> Web Form)</p>
+
+<p>Add the folowing HTML code to your HelloWorld.aspx page</p>
+<pre class="file">
+&lt;html&gt;
+  &lt;body&gt;
+    &lt;form id="form1" runat="server"&gt;
+      &lt;div&gt;
+        &lt;h1&gt;Hello &lt;asp:Label ID="lblHelloWorld" runat="server" /&gt;!&lt;/h1&gt;
+      &lt;/div&gt;
+    &lt;/form&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<p>Now we can start coding our HelloWorld page, we are putting the code in our "Code Behind" (HelloWorld.aspx.cs)</p>
+
+<pre class="file">
+protected void Page_Load(object sender, EventArgs e)
+{       
+	string name = "World";
+
+     	string nameParam = Request.QueryString["name"];
+     	lblHelloWorld.Text = name;
+
+       if (nameParam != null)
+       {
+           name = nameParam;
+           lblHelloWorld.Text = name;
+       }       
+}
+</pre>
+
+<p>We are done with the HelloWorld page so now we are going to Build and launch it using the F5 key. There will start a ASP.NET Development Server, and your page will open in the default browser.</p>
+
+<div class="screen">
+    <h1>Hello World!</h1>
+</div>
+
+<p>OK! that worked, now add <code>?name=Touchatag</code> to the url. In my case that makes <code>http://localhost:51207/HelloWorld/HelloWorld.aspx?name=Touchatag</code>. This should result in :</p>
+
+<div class="screen">
+    <h1>Hello Touchatag!</h1>
+</div>
+
+<p>Ok, this is our simple webapp! But for some users adding their name to end of the url might be a bit too difficult ... so we'll create a solution for that, an external touchatag Template that takes care of just that.</p>
+
+<h2>Creating Template functionality</h2>
+
+<p>Let's switch back to our <code>ASP.NET Website</code> and create a new page <code>CreateEditTemplate.aspx</code>.<br />
+   First of all we check if there is a request parameter available with the name <code>applicationRequestId</code>, because we will need that identifier to connect to the webservice.</p>
+
+<pre class="file">
+public partial class CreateEdit<code>Template</code> : System.Web.UI.Page
+{
+   protected void Page_Load(object sender, EventArgs e)
+   {
+     String applicationRequestId = Request.QueryString["applicationRequestId"];
+
+     if (applicationRequestId == null)
+      throw new Exception("No 'applicationRequestId' request parameter found");
+   }
+}
+</pre>  
+
+<p>
+Now that we have that <code>applicationRequestId</code> we can connect to the webservice using a Web Reference. <br /> 
+With a right click on our website we can choose for "Add Web Reference...", we are going to use a WSDL file so fill in the folowing URL:
+<code><a href="http://localhost:8080/soap/applicationManagement?wsdl">http://localhost:8080/soap/applicationManagement?wsdl</a></code>. 
+<br />Give the Web reference a name in our case &quot;TouchatagClient&quot; and add it to the website.<br />
+Notice that there is a new folder "App_WebReferences" with all our web References.
+</p>
+
+<p>The last thing that we have to do is import the types defined in our Namespace "TouchatagClient", place the folowing code at the top of your <code>CreateEditTemplate.aspx.cs</code> file</p>
+
+<pre class="file">
+using TouchatagClient;
+</pre>   
+
+<p>Ok, we have our client, now let's add code to our <code>Page_Load</code> method that provides us with a binding</p>
+
+<pre class="file">
+ApplicationManagement a;
+
+try
+{   
+    a = new ApplicationManagement();
+    a.Credentials = new NetworkCredential("tikiteam", "tikiteam");
+    a.PreAuthenticate = true;                                                             
+}
+catch (Exception exc)
+{
+    throw exc;
+}
+</pre>
+
+<p>You can see that we use NetworkCredentials to authenticate to the server, in our case the 
+    username is &#39;tikiteam&#39; and the password is also &#39;tikiteam&#39;.</p>
+
+<p>Next we use the <code>applicationRequestId</code> together with the binding to call the <code>getApplicationConfig</code>. So we add this code to our <code>Page_Load</code> method</p>
+
+<pre class="file">
+byte[] value = null;
+
+value = a.getApplicationConfig(applicationRequestId);
+</pre>
+
+<p>This <code>byte[] value</code> we get returned is an opaque value where we, as a template developper can store details about this instance. In our case we use it to store the <code>name</code>. Of course if the user is <strong>creating</strong> a tikit, there is no value yet. While in case of an <strong>update</strong>, we can add the decoded value to our model to be passed on to the view.</p>
+<pre class="file" >
+String name = "";
+
+if (value != null)
+{
+    //this must be an UPDATE
+    System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
+    name = enc.GetString(value);
+    
+    if (!IsPostBack)
+    {
+       txtName.Text = name;
+    }
+}
+</pre>
+
+<p>Now lets have a look to our design, we are going to add the folowing HTML code to our <code>CreateEditTemplate.aspx</code></p>
+
+<pre class="file">
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head runat="server"&gt;
+    &lt;title&gt;Hello World Template&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;form id="form1" runat="server"&gt;
+    &lt;div&gt;
+      &lt;TABLE&gt;
+    	&lt;TR&gt;
+         &lt;TD&gt;&lt;asp:label runat="server"&gt;Your name&lt;/asp:label&gt;&lt;/TD&gt;
+         &lt;TD&gt;&lt;asp:TextBox ID="txtName" runat="server"/&gt;&lt;/TD&gt;
+       &lt;/TR&gt;
+       
+       &lt;TR&gt;
+        &lt;TD colspan="2"&gt;
+          &lt;asp:Button ID="btnSubmit" runat="server" Text="Enter" 
+                onclick="btnSubmit_Click" /&gt;&lt;/TD&gt;
+      &lt;/TR&gt;
+     &lt;/TABLE&gt;  
+   &lt;/div&gt;
+   &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+</pre>
+
+<p>So this is the first step of our template. We present the user with a form to enter or update his name. Now move on to the <code>btnSubmit_click</code> method in the <code>HelloWorld</code> Website.</p>
+
+<pre class="file">
+private const string APPLICATION_URL = 
+                     "http://localhost:51207/HelloWorld/HelloWorld.aspx?name=";
+
+protected void btnSubmit_Click(object sender, EventArgs e)
+{
+   String applicationRequestId = Request.QueryString["applicationRequestId"];
+
+   if (applicationRequestId == null)
+     throw new Exception("No 'applicationRequestId' request parameter found");
+
+   string name = txtName.Text;
+
+   if (name == null)
+   {
+      throw new Exception("No 'name' parameter found");
+   }
+
+   string urlString = APPLICATION_URL + 
+                      System.Web.HttpUtility.UrlEncode(name, Encoding.UTF8);
+}
+</pre>
+
+<p>What we do in these first couple of lines is retrieve the <code>applicationRequestId</code> parameter again for further use when we connect to the webservice. Also we get the <code>name</code> parameter that the user filled in. After that we build the <code>url</code> by appending the urlEncoded name to the <code>APPLICATION_URL</code>. Do not forget to update this to the location where your website is hosted.</p>
+
+<p>Lets start building the <code>HandleRequest</code> to pass on to the webservice:</p>
+
+<pre class="file">
+parameter param = new parameter();
+param.name = "URI";
+param.ItemElementName = ItemChoiceType1.URI;
+param.Item = (string) urlString;
+
+superblock weblinkBlock = new superblock();
+weblinkBlock.@ref = "urn:touchatag:block:web-link-app";
+weblinkBlock.id = "urn:touchatag:block:*";
+
+//First create a new Array and then assign the 
+//array to the correct property
+parameter[] pams = new parameter[1];
+pams[0] = param;
+weblinkBlock.parameter = pams;
+
+
+command cmd = new command();
+cmd.id = "default";
+
+Specification spec = new Specification();
+
+//First create a new Array and then assign the 
+//array to the correct property
+command[] commands = new command[1];
+commands[0] = cmd;
+spec.application = commands ;
+
+//First create a new Array and then assign the 
+//array to the correct property
+superblock[] supers = new superblock[1];
+supers[0] = weblinkBlock;
+spec.blueprint = supers;
+
+HandleRequest handleReq = new HandleRequest();
+handleReq.specification = spec;
+handleReq.applicationConfig = new System.Text.ASCIIEncoding().GetBytes(name);
+handleReq.tikitTransactionId = applicationRequestId;
+
+</pre>
+
+<p>The <code>HandleRequests</code> consists of 3 objects:</p>
+<ul>
+	<li><code>Specification</code></li>
+	<li><code>ApplicationConfig</code></li>
+	<li><code>TikitTransactionId</code></li>
+</ul>
+
+<p>The <code>Specification</code> contains an <code>Application</code> and a <code>Blueprint</code>. In our case the <code>Application</code> only contains the <code>default</code> command. The <code>Blueprint</code> contains a list of <code>Block</code>'s, in our case just a single one, a reference to the existing <code>"urn:touchatag:block:web-link-app"</code> <code>SuperBlock</code>. Containing a <code>Parameter</code> with name <code>URI</code> and as value the url we have build before.</p>
+
+<p>The <code>ApplicationConfig</code> contains the encoded data mentioned earlier.</p>
+
+<p>Lastly the <code>TikitTransactionId</code> is the identifier that was passed on to our ASP.NET page.</p>
+
+<p>Now we are ready to send this to the webservice</p>
+
+<pre class="file">
+ApplicationManagement a;
+            
+try
+{
+    a = new ApplicationManagement();
+    a.Credentials = new NetworkCredential("tikiteam", "tikiteam");
+    a.PreAuthenticate = true;
+}
+catch (Exception exc)
+{
+    throw exc;
+}
+
+a.updateTransaction(handleReq);
+
+Response.Redirect("thankyou.aspx");
+</pre>
+
+<p>The only that is left is creating this thankyou.aspx page. Therefore we create a new Web Form <code>ThankYou.aspx</code> in our <code>HelloWorld</code> Website and add the folowing HTML:</p>
+
+<pre class="file">
+&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+&lt;head runat="server"&gt;
+    &lt;title&gt;Thank You&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;form id="form1" runat="server"&gt;
+    &lt;div&gt;
+    	&lt;h2&gt;Thanks!&lt;/h2&gt;
+    &lt;/div&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+<p>Thats it..., we can now build our code (Key shortcut: Ctrl-Shift-B) </p>
+
+<h2>Succes!</h2>
+</div>
+          <div id="ft">&copy; touchatag - <a href="http://www.tikitag.com/terms-use-website">Terms of use</a></div>
+    </div>
+</body>
+</html>
